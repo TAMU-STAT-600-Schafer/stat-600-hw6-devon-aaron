@@ -83,7 +83,7 @@ Rcpp::List LRMultiClass_c(const arma::mat& X, const arma::uvec& y, const arma::m
     // ////
     // Numerator:
     arma::mat Xb = X * beta_init;
-    arma::mat exp_Xb = arma::expmat(Xb);
+    arma::mat exp_Xb = arma::exp(Xb);
     // Denominator:
     arma::colvec sum_exp_Xb = arma::sum(exp_Xb, 1); // Essentially rowsum()
     // pk:
@@ -91,8 +91,19 @@ Rcpp::List LRMultiClass_c(const arma::mat& X, const arma::uvec& y, const arma::m
     
     // Compute Objective Value f(beta_init): //
     // ////
+    // Negative Log Likelihood:
     arma::mat y_indicator = uvec_one_hot(y, n, K); // One-hot encode y uvec
+    arma::mat objective_obj1_mat = y_indicator * arma::log(p_k).t(); // Compute matrix in Negative Log Likelihood derivation
+    int num_col_obj1_mat = objective_obj1_mat.n_cols;
+    double objective_obj1 = (-1) * sum_diag(objective_obj1_mat, num_col_obj1_mat); // Negative Log Likelihood
+    // Ridge Penalty:
+    double ridge_pen = (lambda / 2) * (arma::accu(arma::sum(arma::square(beta_init), 0)));
     
+    // Objective Value f(beta_init):
+    double objective_obj = objective_obj1 + ridge_pen;
+    
+    // Append Objective value f(beta_init) to Main Objective Vector:
+    objective[0] = objective_obj;
     
     
     
