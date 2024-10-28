@@ -85,7 +85,7 @@ LRMultiClass <- function(X, y, numIter = 50, eta = 0.1, lambda = 1, beta_init = 
   #############################################################
   
   # Call C++ LRMultiClass_c function to implement the algorithm
-  out = LRMultiClass_c(X, y, numIter, eta, lambda, beta_init)
+  out = LRMultiClass_c(X, y, beta_init, numIter, eta, lambda)
   
   # Return the class assignments
   return(out)
