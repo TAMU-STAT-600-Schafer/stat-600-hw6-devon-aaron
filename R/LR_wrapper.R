@@ -24,8 +24,7 @@ LRMultiClass <- function(X, y, numIter = 50, eta = 0.1, lambda = 1, beta_init = 
   K <- length(unique(y))
   p <- dim(X)[2]
   n <- length(y)
-  # Initialize vector objects (errors/objective):
-  error_train <- vector()
+  # Initialize vector objects (objective):
   objective <- vector()
   
   # Check that the first column of X are 1s, if not - display appropriate message and stop execution.
