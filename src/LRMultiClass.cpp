@@ -16,14 +16,14 @@
 // FUNCTIONS
 // ////
 // One Hot Encode Matrices:
-arma::mat uvec_one_hot(const arma::uvec& y, int n, int K) {
+arma::mat uvec_one_hot(arma::uvec y, int n, int K) {
   
   // Initialize zero matrix
   arma::mat one_hot_mat = arma::zeros<arma::mat>(n, K);
   
   for(int i = 0; i < n; i++){
     
-    int col_index = y[i];
+    int col_index = y[i] - 1;
     
     one_hot_mat(i, col_index) = 1;
     
@@ -32,8 +32,11 @@ arma::mat uvec_one_hot(const arma::uvec& y, int n, int K) {
   return one_hot_mat;
   
 }
+
+// [[Rcpp::export]]
+
 // Sum Diagonals of Matrices:
-double sum_diag(arma::mat main_mat, int num_col){
+double sum_diag(const arma::mat& main_mat, int num_col){
   
   double diagonal_sum = 0.0;
   
@@ -50,6 +53,8 @@ double sum_diag(arma::mat main_mat, int num_col){
 // ////
 // ////
 
+// [[Rcpp::export]]
+
 // For simplicity, no test data, only training data, and no error calculation.
 // X - n x p data matrix
 // y - n length vector of classes, from 0 to K-1
@@ -60,25 +65,25 @@ double sum_diag(arma::mat main_mat, int num_col){
 Rcpp::List LRMultiClass_c(const arma::mat& X, const arma::uvec& y, const arma::mat& beta_init,
                                int numIter = 50, double eta = 0.1, double lambda = 1){
     // All input is assumed to be correct
-    
+
     ////////////////////////////////
     // Initialize some parameters //
     ////////////////////////////////
-    
+
     int K = max(y) + 1; // number of classes
     int p = X.n_cols;
     int n = X.n_rows;
     arma::mat beta = beta_init; // to store betas and be able to change them if needed
     arma::vec objective(numIter + 1); // to store objective values
-    
+
     ////////////////////////////////////////////////
     // Initialize anything else that you may need //
     ////////////////////////////////////////////////
-    
+
     // ////
     // Calculate corresponding pk, objective value f(beta_init) given the starting point beta_init
     // ////
-    
+
     // Compute pk: //
     // ////
     // Numerator:
@@ -88,7 +93,7 @@ Rcpp::List LRMultiClass_c(const arma::mat& X, const arma::uvec& y, const arma::m
     arma::colvec sum_exp_Xb = arma::sum(exp_Xb, 1); // Essentially rowsum()
     // pk:
     arma::mat p_k = exp_Xb / sum_exp_Xb;
-    
+
     // Compute Objective Value f(beta_init): //
     // ////
     // Negative Log Likelihood:
@@ -98,18 +103,18 @@ Rcpp::List LRMultiClass_c(const arma::mat& X, const arma::uvec& y, const arma::m
     double objective_obj1 = (-1) * sum_diag(objective_obj1_mat, num_col_obj1_mat); // Negative Log Likelihood
     // Ridge Penalty:
     double ridge_pen = (lambda / 2) * (arma::accu(arma::sum(arma::square(beta_init), 0)));
-    
+
     // Objective Value f(beta_init):
     double objective_obj = objective_obj1 + ridge_pen;
-    
+
     // Append Objective value f(beta_init) to Main Objective Vector:
     objective[0] = objective_obj;
-    
-    
-    
+
+
+
     // Newton's method cycle - implement the update EXACTLY numIter iterations
-    
-    
+
+
     // Create named list with betas and objective values
     return Rcpp::List::create(Rcpp::Named("beta") = beta,
                               Rcpp::Named("objective") = objective);
