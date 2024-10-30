@@ -19,7 +19,7 @@ source("./R/LR_wrapper.R")
 ##########################
 
 # One hot encoding:
-uvec_one_hot(as.vector(c(1, 3, 2, 1, 1, 2)), 6, 3)
+# uvec_one_hot(as.vector(c(1, 3, 2, 1, 1, 2)), 6, 3) # Does not run passing in R vector objects (indexing issue)
 # Diagonal sum:
 sum_diag(matrix(c(1, 0, 0, 2), byrow = TRUE, ncol = 2), num_col = 2)
 
@@ -39,21 +39,16 @@ letter_train <- read.table("Data/letter-train.txt", header = F, colClasses = "nu
 Y <- letter_train[, 1]
 X <- as.matrix(letter_train[, -1])
 
-# Testing data
-letter_test <- read.table("Data/letter-test.txt", header = F, colClasses = "numeric")
-Yt <- letter_test[, 1]
-Xt <- as.matrix(letter_test[, -1])
-
-# [ToDo] Make sure to add column for an intercept to X and Xt
+# [ToDo] Make sure to add column for an intercept to X
 X <- cbind(1, X)
-Xt <- cbind(1, Xt)
 
-
-# Source the LR function
-source("FunctionsLR.R")
+# [ToDo] Include beta_init object (default beta_init in LRMultiClass R function):
+beta_init <- matrix(0, nrow = dim(X)[2], ncol = length(unique(Y))) # ncol: K
 
 # [ToDo] Try the algorithm LRMultiClass with lambda = 1 and 50 iterations. Call the resulting object out, i.e. out <- LRMultiClass(...)
-out <- LRMultiClass(X, Y, Xt, Yt)
+out <- LRMultiClass_c(X, Y, beta_init)
+out2 <- LRMultiClass_c(X, Y, beta_init, numIter = 1)
+out
 
 # # Alternative inputs:
 # # High lambda (regularization)
@@ -68,9 +63,6 @@ out <- LRMultiClass(X, Y, Xt, Yt)
 
 # The code below will draw pictures of objective function, as well as train/test error over the iterations
 plot(out$objective, type = 'o')
-plot(out$error_train, type = 'o')
-plot(out$error_test, type = 'o')
-
 
 # Feel free to modify the code above for different lambda/eta/numIter values to see how it affects the convergence as well as train/test errors
 
@@ -91,6 +83,12 @@ check_runtime(num_times = 5L)
 
 # Median time: 8.142604 seconds (Intel chip)
 
+
+# Debugger:
+# Debug LRMultiClass_c:
+debug(LRMultiClass_c)
+LRMultiClass_c(X, Y, beta_init)
+undebug(LRMultiClass_c)
 
 
 
