@@ -49,6 +49,7 @@ beta_init <- matrix(0, nrow = dim(X)[2], ncol = length(unique(Y))) # ncol: K
 out <- LRMultiClass_c(X, Y, beta_init)
 out2 <- LRMultiClass_c(X, Y, beta_init, numIter = 1)
 out
+out2
 
 # # Alternative inputs:
 # # High lambda (regularization)
@@ -71,7 +72,7 @@ library(microbenchmark)
 check_runtime <- function(num_times) {
   benchmark <- microbenchmark(
     
-    multinom_log_reg <- LRMultiClass(X, Y, Xt, Yt),
+    LRMultiClass_cpp = LRMultiClass_c(X, Y, beta_init),
     times = num_times
     
   )
