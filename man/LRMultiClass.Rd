@@ -7,7 +7,7 @@
 LRMultiClass(X, y, numIter = 50, eta = 0.1, lambda = 1, beta_init = NULL)
 }
 \arguments{
-\item{X}{A ($n\times p$) matrix of numeric data}
+\item{X}{A n x p matrix of numeric data}
 
 \item{y}{A response vector of length $n$ containing classifications}
 
@@ -21,8 +21,8 @@ LRMultiClass(X, y, numIter = 50, eta = 0.1, lambda = 1, beta_init = NULL)
 }
 \value{
 A list with the elements
-   \item{beta} A ($n\times K$) matrix that's the iterative solution to Multi-Class Logistic Regression with penalty lambda
-   \item{fmin} A vector of length numIter + 1 containing initial objective function value and subsequent objective function values in each iteration
+\item{beta}{ A n x K matrix that's the iterative solution to Multi-Class Logistic Regression with penalty lambda }
+\item{fmin}{ A vector of length numIter + 1 containing initial objective function value and subsequent objective function values in each iteration }
 }
 \description{
 Logist Regression Multi-Class Regression

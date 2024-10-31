@@ -7,11 +7,11 @@
 MyKmeans(X, K, M = NULL, numIter = 100)
 }
 \arguments{
-\item{X}{A ($n\times p$) matrix of numeric data}
+\item{X}{A n x p matrix of numeric data}
 
 \item{K}{The number of clusters.}
 
-\item{M}{(Optional) A ($K\times p$) matrix of data used as initial centers. If this argument is used, number of rows in M must equal non-optional argument K}
+\item{M}{(Optional) A K x p matrix of data used as initial centers. If this argument is used, number of rows in M must equal non-optional argument K}
 
 \item{numIter}{The max number of iterations used in K-means clustering algorithm.}
 }
@@ -23,7 +23,7 @@ K-means clustering for a data matrix X
 }
 \examples{
 
-# A simple example
+##### Example 1
 set.seed(0)
 
 n1 = 100
@@ -38,7 +38,8 @@ K = 2
 cluster_assignment = MyKmeans(X, K)
 
 
-
+#####################
+##### Example 2
 
 set.seed(0)
 

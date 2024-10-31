@@ -1,8 +1,8 @@
 #' K-means clustering for a data matrix X
 #'
-#' @param X A ($n\times p$) matrix of numeric data
+#' @param X A n x p matrix of numeric data
 #' @param K The number of clusters. 
-#' @param M (Optional) A ($K\times p$) matrix of data used as initial centers. If this argument is used, number of rows in M must equal non-optional argument K
+#' @param M (Optional) A K x p matrix of data used as initial centers. If this argument is used, number of rows in M must equal non-optional argument K
 #' @param numIter The max number of iterations used in K-means clustering algorithm.
 #'
 #' @return A vector of length $n$ containing integers between 1 and K of cluster assignments.
@@ -10,7 +10,7 @@
 #'
 #' @examples
 #' 
-#' # A simple example
+#' ##### Example 1
 #' set.seed(0)
 #' 
 #' n1 = 100
@@ -25,8 +25,9 @@
 #' cluster_assignment = MyKmeans(X, K)
 #' 
 #' 
-#' 
-#' 
+#' #####################
+#' ##### Example 2
+#'
 #' set.seed(0)
 #' 
 #' n1 = 50
@@ -57,8 +58,8 @@ MyKmeans <- function(X, K, M = NULL, numIter = 100){
     
     stopifnot(exprs = {
       # Check K and numIter are double single value
-      is.double(K)
-      is.double(numIter)
+      is.numeric(K)
+      is.numeric(numIter)
       length(as.integer(K)) == 1
       length(as.integer(numIter)) == 1
       !is.na(K)
@@ -67,7 +68,7 @@ MyKmeans <- function(X, K, M = NULL, numIter = 100){
       # Check to make sure X makes sense
       is.matrix(X)
       !any(is.na(X))
-      is.double(X)
+      is.numeric(X)
     })
     
     # Check K input makes sense, also storing it as an integer
