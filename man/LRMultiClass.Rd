@@ -2,28 +2,30 @@
 % Please edit documentation in R/LR_wrapper.R
 \name{LRMultiClass}
 \alias{LRMultiClass}
-\title{Title}
+\title{Logist Regression Multi-Class Regression}
 \usage{
 LRMultiClass(X, y, numIter = 50, eta = 0.1, lambda = 1, beta_init = NULL)
 }
 \arguments{
-\item{X}{}
+\item{X}{A ($n\times p$) matrix of numeric data}
 
-\item{y}{}
+\item{y}{A response vector of length $n$ containing classifications}
 
-\item{numIter}{}
+\item{numIter}{(Optional) Number of iterations to perform Damped Newton's Method}
 
-\item{eta}{}
+\item{eta}{(Optional) Control parameter for step size of Damped Newton's Method}
 
-\item{lambda}{}
+\item{lambda}{(Optional) Penalty parameter for l2-norm of Beta}
 
-\item{beta_init}{}
+\item{beta_init}{(Optional) Initial Beta value to use as starting point for iterative solution}
 }
 \value{
-
+A list with the elements
+   \item{beta} A ($n\times K$) matrix that's the iterative solution to Multi-Class Logistic Regression with penalty lambda
+   \item{fmin} A vector of length numIter + 1 containing initial objective function value and subsequent objective function values in each iteration
 }
 \description{
-Title
+Logist Regression Multi-Class Regression
 }
 \examples{
 # Give example

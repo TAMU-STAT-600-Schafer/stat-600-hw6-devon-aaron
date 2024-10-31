@@ -2,25 +2,61 @@
 % Please edit documentation in R/Kmeans_wrapper.R
 \name{MyKmeans}
 \alias{MyKmeans}
-\title{Title}
+\title{K-means clustering for a data matrix X}
 \usage{
 MyKmeans(X, K, M = NULL, numIter = 100)
 }
 \arguments{
-\item{X}{}
+\item{X}{A ($n\times p$) matrix of numeric data}
 
-\item{K}{}
+\item{K}{The number of clusters.}
 
-\item{M}{}
+\item{M}{(Optional) A ($K\times p$) matrix of data used as initial centers. If this argument is used, number of rows in M must equal non-optional argument K}
 
-\item{numIter}{}
+\item{numIter}{The max number of iterations used in K-means clustering algorithm.}
 }
 \value{
-Explain return
+A vector of length $n$ containing integers between 1 and K of cluster assignments.
 }
 \description{
-Title
+K-means clustering for a data matrix X
 }
 \examples{
-# Give example
+
+# A simple example
+set.seed(0)
+
+n1 = 100
+n2 = 100
+p = 5
+
+X = rbind(matrix(rnorm(n1*p, mean = -2), nrow = n1, ncol = p),
+          matrix(rnorm(n2*p, mean = 5),  nrow = n2, ncol = p))
+
+K = 2
+
+cluster_assignment = MyKmeans(X, K)
+
+
+
+
+set.seed(0)
+
+n1 = 50
+n2 = 50
+n3 = 50
+n4 = 50
+
+p = 2
+
+X = rbind(matrix(rnorm(n1*p, mean = -3, sd = .1), nrow = n1, ncol = p),
+          matrix(rnorm(n2*p, mean = -1, sd = .1), nrow = n2, ncol = p),
+          matrix(rnorm(n3*p, mean =  1, sd = .1), nrow = n3, ncol = p),
+          matrix(rnorm(n4*p, mean =  3, sd = .1), nrow = n4, ncol = p))
+
+K = 4
+
+M = X[sample.int(n1+n2+n3+n4, size = K, replace = TRUE), , drop = FALSE]
+cluster_assignment = MyKmeans(X, K, M)
+ 
 }
