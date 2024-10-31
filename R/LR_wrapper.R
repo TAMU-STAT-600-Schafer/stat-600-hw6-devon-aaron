@@ -1,14 +1,16 @@
 
-#' Title
+#' Logist Regression Multi-Class Regression
 #'
-#' @param X 
-#' @param y 
-#' @param numIter 
-#' @param eta 
-#' @param lambda 
-#' @param beta_init 
+#' @param X A ($n\times p$) matrix of numeric data
+#' @param y A response vector of length $n$ containing classifications
+#' @param numIter (Optional) Number of iterations to perform Damped Newton's Method
+#' @param eta (Optional) Control parameter for step size of Damped Newton's Method
+#' @param lambda (Optional) Penalty parameter for l2-norm of Beta
+#' @param beta_init (Optional) Initial Beta value to use as starting point for iterative solution
 #'
-#' @return
+#' @return A list with the elements
+#'    \item{beta} A ($n\times K$) matrix that's the iterative solution to Multi-Class Logistic Regression with penalty lambda
+#'    \item{fmin} A vector of length numIter + 1 containing initial objective function value and subsequent objective function values in each iteration
 #' @export
 #'
 #' @examples

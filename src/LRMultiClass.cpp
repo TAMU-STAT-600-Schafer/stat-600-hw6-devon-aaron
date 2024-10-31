@@ -2,19 +2,14 @@
 
 // we only include RcppArmadillo.h which pulls Rcpp.h in for us
 #include "RcppArmadillo.h"
-// EDIT: Line below required to remove Rcpp errors
-// #include "Rcpp"
 
 // via the depends attribute we tell Rcpp to create hooks for
 // RcppArmadillo so that the build process will know what to do
 //
 // [[Rcpp::depends(RcppArmadillo)]]
-using namespace Rcpp;
-// [[Rcpp::export]]
 
-// ////
-// FUNCTIONS
-// ////
+using namespace Rcpp;
+
 // One Hot Encode Matrices:
 arma::mat uvec_one_hot(arma::uvec y, int n, int K) {
   
@@ -25,7 +20,7 @@ arma::mat uvec_one_hot(arma::uvec y, int n, int K) {
     
     int col_index = y[i];
     
-    one_hot_mat(i, col_index) = 1;
+    one_hot_mat(i, col_index) = 1.0;
     
   }
   
@@ -33,27 +28,8 @@ arma::mat uvec_one_hot(arma::uvec y, int n, int K) {
   
 }
 
-// [[Rcpp::export]]
 
-// Sum Diagonals of Matrices:
-double sum_diag(const arma::mat& main_mat, int num_col){
-  
-  double diagonal_sum = 0.0;
-  
-  for(int i = 0; i < num_col; i++){
-    
-    diagonal_sum = diagonal_sum + main_mat(i, i);
-    
-  }
-  
-  return diagonal_sum;
-  
-}
 
-// ////
-// ////
-
-// [[Rcpp::export]]
 
 // For simplicity, no test data, only training data, and no error calculation.
 // X - n x p data matrix
@@ -62,6 +38,8 @@ double sum_diag(const arma::mat& main_mat, int num_col){
 // eta - damping parameter, default 0.1
 // lambda - ridge parameter, default 1
 // // beta_init - p x K matrix of starting beta values (always supplied in right format)
+
+// [[Rcpp::export]]
 Rcpp::List LRMultiClass_c(const arma::mat& X, const arma::uvec& y, const arma::mat& beta_init,
                                int numIter = 50, double eta = 0.1, double lambda = 1){
     // All input is assumed to be correct
@@ -90,7 +68,7 @@ Rcpp::List LRMultiClass_c(const arma::mat& X, const arma::uvec& y, const arma::m
     arma::mat Xb = X * beta;
     arma::mat exp_Xb = arma::exp(Xb);
     // Denominator:
-    arma::vec sum_exp_Xb = arma::sum(exp_Xb, 1); // Essentially rowsum() (changed colvec to vec)
+    arma::vec sum_exp_Xb = arma::sum(exp_Xb, 1); 
     // pk:
     arma::mat p_k = exp_Xb.each_col() / sum_exp_Xb;
     
@@ -99,26 +77,9 @@ Rcpp::List LRMultiClass_c(const arma::mat& X, const arma::uvec& y, const arma::m
     // ////
     // Negative Log Likelihood:
     arma::mat y_indicator = uvec_one_hot(y, n, K); // One-hot encode y uvec
-    // arma::mat y_indicator(n, K); // One-hot encode y uvec
-    // for(int k = 0; k < K; k++){
-    //   for (int j = 0; j < n; j++){
-    //     if(y(j) == k){
-    //       y_indicator(j, k) = 1.0;
-    //     } else {
-    //       y_indicator(j, k) = 0.0;
-    //     }
-    //   }
-    // }
+
     
-    // arma::mat objective_obj1_mat = y_indicator * arma::log(p_k).t(); // Compute matrix in Negative Log Likelihood derivation
-    // arma::mat objective_obj1_mat = y_indicator % log(p_k); // edited above line
-    // int num_col_obj1_mat = objective_obj1_mat.n_cols;
-    // double objective_obj1 = (-1.0) * sum_diag(objective_obj1_mat, num_col_obj1_mat); // Negative Log Likelihood
-    // // Ridge Penalty:
-    // double ridge_pen = (lambda / 2) * (arma::accu(arma::sum(arma::square(beta), 0)));
-    // Objective Value f(beta_init):
-    // double objective_obj = objective_obj1 + ridge_pen;
-    double obj = -arma::accu(y_indicator % arma::log(p_k)) + (lambda / 2.0) * arma::accu(arma::square(beta)); // Replaced code above
+    double obj = -arma::accu(y_indicator % arma::log(p_k)) + (lambda / 2.0) * arma::accu(arma::square(beta));
     
     // Append Objective value f(beta_init) to Main Objective Vector:
     objective[0] = obj;
@@ -128,46 +89,40 @@ Rcpp::List LRMultiClass_c(const arma::mat& X, const arma::uvec& y, const arma::m
     // ////
     // Initialize Terms:
     arma::mat X_tran = X.t();
-    arma::mat Identity = arma::eye<arma::mat>(p, p);
+    arma::mat lambda_I = lambda * arma::eye<arma::mat>(p, p);
+    arma::vec g(K);
+    arma::vec W(n);
+    arma::mat h(K, K);
+    arma::mat X_W(n,p);
 
-    // Loop: Within one iteration perform the update, calculate updated objective function and training/testing errors in %
+    
+    // Loop: Within one iteration perform the update, calculate updated objective function 
     // ////
     for(int i = 0; i < numIter; i++){
 
       // Newly added for W computation:
-      // arma::mat W_mat = p_k % (1.0 - p_k);
 
       for(int k = 0; k < K; k++){
 
         // W term configuration (in Hessian)
         //  W in this case is the kth diagonal element of main W mat
-        arma::vec W = p_k.col(k) % (1 - p_k.col(k)); // replaced with below W code:
-        // arma::vec W = W_mat.col(k);
-        arma::mat X_W = X.each_col() % arma::sqrt(W); // replaced with below code:
-        // arma::mat X_W = X.each_col() % W;        
-
-        // Generating Function Update:
-        arma::vec g = X_tran * (p_k.col(k) - y_indicator.col(k)) + (lambda * beta.col(k));
-        // std::cout << g << std::endl;
+        W = p_k.col(k) % (1 - p_k.col(k));
+        
+        // weighted multiplication of matrix X
+        X_W = X.each_col() % arma::sqrt(W); 
+        
+        // grandient Update:
+        g = X_tran * (p_k.col(k) - y_indicator.col(k)) + (lambda * beta.col(k));
+        
         // Hessian Update:
-        arma::mat h = (X_W.t() * X_W) + (lambda * Identity); // replaced with below code:
-        // arma::mat h = (X_tran * X_W) + (lambda * Identity);
+        h = (X_W.t() * X_W) + (lambda_I); 
+        
         // Damped Newton's Update:
-        beta.col(k) -= (eta * (arma::solve(h, g))); // replaced with below 2 lines of code:
-        // arma::mat h_inv = arma::inv_sympd(h);
-        // beta.col(k) = beta.col(k) - (eta * (h_inv * g));
+        beta.col(k) -= (eta * (arma::solve(h, g))); 
 
       }
-
-      // Update pk
-      // Num:
-      // arma::mat Xb = X * beta;
-      // arma::mat exp_Xb = arma::exp(Xb);
-      // // Rowsums:
-      // arma::colvec sum_exp_Xb = arma::sum(exp_Xb, 1);
-      // // pk:
-      // arma::mat p_k = exp_Xb.each_col() / sum_exp_Xb;
       
+      // Recalculate probabilities in p_k
       Xb = X * beta;
       exp_Xb = arma::exp(Xb);
       // Rowsums:
@@ -176,14 +131,7 @@ Rcpp::List LRMultiClass_c(const arma::mat& X, const arma::uvec& y, const arma::m
       p_k = exp_Xb.each_col() / sum_exp_Xb;
       
       
-      // Compute Objective Value f(beta):
-      // arma::mat log_pk = arma::log(p_k);
-      // double neg_log_lik = -(arma::accu(y_indicator % log_pk)); // Negative Log Likelihood
-      // double ridge_reg = (lambda / 2) * (arma::accu(arma::sum(arma::square(beta), 0))); // Ridge Penalty
-      // double objective_obj = neg_log_lik + ridge_reg; // Objective Value
-      // 
-      // objective[i + 1] = objective_obj; // Append
-      double obj = -arma::accu(y_indicator % arma::log(p_k)) + (lambda / 2.0) * arma::accu(arma::square(beta)); // Replaced code above
+      obj = -arma::accu(y_indicator % arma::log(p_k)) + (lambda / 2.0) * arma::accu(arma::square(beta));
       // Append Objective value f(beta_init) to Main Objective Vector:
       objective[i + 1] = obj;
 
@@ -194,9 +142,3 @@ Rcpp::List LRMultiClass_c(const arma::mat& X, const arma::uvec& y, const arma::m
     return Rcpp::List::create(Rcpp::Named("beta") = beta,
                               Rcpp::Named("objective") = objective);
 }
-
-
-
-
-
-
