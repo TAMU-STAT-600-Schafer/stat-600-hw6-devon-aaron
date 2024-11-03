@@ -1,7 +1,7 @@
 #' Logist Regression Multi-Class Regression
 #'
 #' @param X A n x p matrix of numeric data
-#' @param y A response vector of length $n$ containing classifications
+#' @param y A response vector of length n containing classifications
 #' @param numIter (Optional) Number of iterations to perform Damped Newton's Method
 #' @param eta (Optional) Control parameter for step size of Damped Newton's Method
 #' @param lambda (Optional) Penalty parameter for l2-norm of Beta
