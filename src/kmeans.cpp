@@ -32,26 +32,38 @@ int count_unique(arma::uvec arr, int n){
 } 
 
 
+// Function that implements K-means algorithm. The default number of maximal iterations is 100.
+// X - n by p matrix containing n data points to cluster
+// K - integer specifying number of clusters
+// M - (Optional) A K x p matrix of data used as initial centers. If this argument is used, number of rows in M must equal non-optional argument K
+// numIter - number of maximal iterations for the algorithm, the default value is 100
+
 // [[Rcpp::export]]
 arma::uvec MyKmeans_c(const arma::mat& X, int K,
                             const arma::mat& M, int numIter = 100){
     // All input is assumed to be correct
     
-    // Initialize some parameters
+    ////////////////////////////////
+    // Initialize some parameters //
+    ////////////////////////////////
+    
     int n = X.n_rows;
     int p = X.n_cols;
     arma::uvec Y(n); // to store cluster assignments
     arma::uvec Y_old(n);
     
     
-    // ############# Implement K-means algorithm. ##############
+    /////////////////////////////////
+    // Implement K-means algorithm //
+    /////////////////////////////////
     //  It should stop when either
     //  (i) the centroids don't change from one iteration to the next (exactly the same), or
     //  (ii) the maximal number of iterations was reached, or
     //  (iii) one of the clusters has disappeared after one of the iterations (in which case the error message is returned)
     
-    
+    // ///
     // Initialize any additional parameters if needed
+    // ///
     arma::colvec rowSumsX2(n);
     arma::vec rowSumsM2(K);
     arma::mat crossprodXM_sumM2(n, p);
@@ -63,22 +75,28 @@ arma::uvec MyKmeans_c(const arma::mat& X, int K,
     
     M_centroids = M;
     
+    // ///
     // For loop with kmeans algorithm
+    // ///
     for(int iter = 0; iter < numIter; iter++){
+      // Update cluster assignments/distance computation-oriented objects
       Y_old = Y;
       rowSumsM2 = arma::sum(arma::square(M_centroids), 1); 
       
+      // Check number of clusters
+      // Case 1: K>1, update centroids
       if(M.n_rows > 1){
         crossprodXM_sumM2 = -2.0 * (X * M_centroids.t());
         crossprodXM_sumM2.each_row() += rowSumsM2.t();
       }
-      // 
+      // Case 2: K<=1
       if(M.n_rows <= 1){
       // I want to return all 0's if this happens
         arma::uvec out(n);
         return(out);
       }
       
+      // Update cluster assignments
       Y = arma::index_min(crossprodXM_sumM2, 1);
 
       // Check if centroids have changed. Return cluster assignments if not.
@@ -95,6 +113,7 @@ arma::uvec MyKmeans_c(const arma::mat& X, int K,
         break;
       }
       
+      // Update centroids
       for(int k = 0; k < K; k++){
         M_centroids.row(k) = arma::mean(X.rows(arma::find(Y == k)), 0);
         
