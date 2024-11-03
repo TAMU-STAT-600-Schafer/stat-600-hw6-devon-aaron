@@ -1,4 +1,3 @@
-
 #' Logist Regression Multi-Class Regression
 #'
 #' @param X A n x p matrix of numeric data
