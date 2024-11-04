@@ -9,7 +9,7 @@ LRMultiClass(X, y, numIter = 50, eta = 0.1, lambda = 1, beta_init = NULL)
 \arguments{
 \item{X}{A n x p matrix of numeric data}
 
-\item{y}{A response vector of length $n$ containing classifications}
+\item{y}{A response vector of length n containing classifications}
 
 \item{numIter}{(Optional) Number of iterations to perform Damped Newton's Method}
 
@@ -28,5 +28,38 @@ A list with the elements
 Logist Regression Multi-Class Regression
 }
 \examples{
-# Give example
+
+##### Example 1
+set.seed(112)
+
+n1 <- 25
+n2 <- 25
+
+X <- rbind(matrix(rnorm(n1, mean = -1, sd = .5), byrow = TRUE, nrow = n1), 
+           matrix(rnorm(n2, mean = 1, sd = .5), byrow = TRUE, nrow = n2))
+           
+X <- cbind(1, X)
+
+y <- c(rep(0, 25), rep(1, 25))
+
+LRMultiClass_Solution <- LRMultiClass(X, y)
+
+#####################
+##### Example 2
+set.seed(112)
+
+n1 <- 10
+n2 <- 10
+n3 <- 10
+
+X <- rbind(matrix(rnorm(4*n1, mean = -2, sd = .75), byrow = TRUE, nrow = n1),
+           matrix(rnorm(4*n2, sd = .75), byrow = TRUE, nrow = n2),
+           matrix(rnorm(4*n3, mean = 2, sd = .75), byrow = TRUE, nrow = n3))
+
+X <- cbind(1, X)
+
+y <- c(rep(0, 10), rep(1, 10), rep(2, 10))
+
+LRMultiClass_Solution <- LRMultiClass(X, y)
+
 }
