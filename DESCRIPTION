@@ -1,7 +1,7 @@
 Package: GroupHW
 Type: Package
 Title: Multiclass Logistic Regression and Kmeans clustering algorithms in Rcpp
-Version: 1.0
+Version: 1.1
 Date: 2020-10-17
 Author: Devon Maywald [aut, cre],
   Aaron Brown [aut]
