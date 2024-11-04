@@ -1,11 +1,16 @@
 Package: GroupHW
 Type: Package
-Title: What the package does (short line)
+Title: Multiclass Logistic Regression and Kmeans clustering algorithms in Rcpp
 Version: 1.0
 Date: 2020-10-17
-Author: Who wrote it
-Maintainer: Who to complain to <yourfault@somewhere.net>
-Description: More about what it does (maybe more than one line)
+Author: Devon Maywald [aut, cre],
+  Aaron Brown [aut]
+Maintainer: Devon Maywald <dmaywald@tamu.edu>
+Description: This package implements Multiclass Logistic Regression using the
+  Damped Newtons Method and the Kmeans clustering with the Lloyd algorithm.
+  The functions LRMultiClass() and MyKmeans() are wrapper functions for these
+  implementations and are primary functionality of this package. The source code
+  of this package is written in Rcpp to allow for faster computations. 
 License: GPL (>= 3)
 Imports: Rcpp (>= 1.0.5)
 LinkingTo: Rcpp, RcppArmadillo
